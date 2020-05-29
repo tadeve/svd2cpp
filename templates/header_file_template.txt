@@ -1,0 +1,9 @@
+#pragma once
+
+#include <cstdint>
+#include <reg.h>
+
+namespace $namespace{
+$register_classes
+$peripheral_class
+}

@@ -1,0 +1,3 @@
+enum class $name : uint32_t {
+    $enum_variants
+};

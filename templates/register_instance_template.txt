@@ -1,0 +1,1 @@
+$register_class<base_address + $offset> $register_name;

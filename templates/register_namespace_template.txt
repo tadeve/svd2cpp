@@ -1,0 +1,9 @@
+namespace $name{
+$enum_definitions
+template <uint32_t address>
+class $name : public $access<address> {
+   public:
+    $name() : $access<address>() {}
+    $methods
+};
+}

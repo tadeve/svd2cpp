@@ -1,0 +1,17 @@
+#pragma once
+
+#include <cstdint>
+#include <type_traits>
+
+typedef uint32_t volatile dev_reg;
+
+class $name {
+public:
+    $enum_definitions 
+private: 
+    $register_definitions
+};
+
+static_assert(std::is_standard_layout<$name>::value,
+              "$name isn't standard layout");
+static_assert(sizeof($name) == $size * sizeof(dev_reg));

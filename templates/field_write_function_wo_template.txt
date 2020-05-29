@@ -1,0 +1,4 @@
+void $name($type v){
+   uint32_t tmp = v << $offset;
+   this->bits(v);
+}
