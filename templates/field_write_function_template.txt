@@ -1,4 +1,4 @@
 void $name($type v){
-   uint32_t tmp = v << $field_offset;
+   uint32_t tmp = v << $offset;
    this->bits_masked(v, $mask);
 }

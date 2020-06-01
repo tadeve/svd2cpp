@@ -1,0 +1,23 @@
+DBGMCU:
+  IDCODE:
+    _read:
+      REV_ID:
+        RevZ : [0x1001, "Revision Z device"]
+        RevB : [0x2000, "Revision Z device"]
+        RevX : [0x3000, "Revision Z device"]
+    _read:
+      DEV_ID: [0, 4095]
+  CR:
+    DBG_STANDBY:
+      Disabled: [0, "Debug Standby Mode Disabled"]
+      Enabled: [1, "Debug Standby Mode Enabled"]
+    DBG_STOP:
+      Disabled: [0, "Debug Stop Mode Disabled"]
+      Enabled: [1, "Debug Stop Mode Enabled"]
+    DBG_SLEEP:
+      Disabled: [0, "Debug Sleep Mode Disabled"]
+      Enabled: [1, "Debug Sleep Mode Enabled"]
+    TRACE_IOEN:
+      Disabled: [0, "TRACE Pins Disabled"]
+      Enabled: [1, "Debug Standby Mode Enabled"]
+  # TODO

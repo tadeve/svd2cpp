@@ -1669,15 +1669,40 @@
                     <fields>
                         <field>
                             <name>DEV_ID</name>
-                            <description>DEV_ID</description>
+                            <description>Device ID</description>
                             <bitOffset>0</bitOffset>
                             <bitWidth>12</bitWidth>
+                            <writeConstraint>
+                                <range>
+                                    <minimum>0</minimum>
+                                    <maximum>4095</maximum>
+                                </range>
+                            </writeConstraint>
                         </field>
                         <field>
                             <name>REV_ID</name>
                             <description>REV_ID</description>
                             <bitOffset>16</bitOffset>
                             <bitWidth>16</bitWidth>
+                            <enumeratedValues>
+                                <name>REV_ID</name>
+                                <usage>read</usage>
+                                <enumeratedValue>
+                                    <name>RevZ</name>
+                                    <description>Revision Z device</description>
+                                    <value>0x1001</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>RevB</name>
+                                    <description>Revision B device</description>
+                                    <value>0x2000</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>RevC</name>
+                                    <description>Revision C device</description>
+                                    <value>0x3000</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                     </fields>
                 </register>
@@ -1692,33 +1717,113 @@
                     <fields>
                         <field>
                             <name>DBG_SLEEP</name>
-                            <description>DBG_SLEEP</description>
+                            <description>Debug Sleep Mode Enable</description>
                             <bitOffset>0</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>DBG_SLEEP</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Disabled</name>
+                                    <description>Debug Sleep Mode Disabled</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Enabled</name>
+                                    <description>Debug Sleep Mode Enabled</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                         <field>
                             <name>DBG_STOP</name>
-                            <description>DBG_STOP</description>
+                            <description>Debug Stop Mode Enable</description>
                             <bitOffset>1</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>DBG_STOP</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Disabled</name>
+                                    <description>Debug Stop Mode Disabled</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Enabled</name>
+                                    <description>Debug Stop Mode Enabled</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                         <field>
                             <name>DBG_STANDBY</name>
-                            <description>DBG_STANDBY</description>
+                            <description>Debug Standby Mode Enable</description>
                             <bitOffset>2</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>DBG_STANDBY</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Disabled</name>
+                                    <description>Debug Standby Mode Disabled</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Enabled</name>
+                                    <description>Debug Standby Mode Enabled</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                         <field>
                             <name>TRACE_IOEN</name>
-                            <description>TRACE_IOEN</description>
+                            <description>TRACE Pins Enable</description>
                             <bitOffset>5</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>TRACE_IOEN</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Enable</name>
+                                    <description>TRACE pins Enabled</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Disable</name>
+                                    <description>TRACE pins Disabled</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                         <field>
                             <name>TRACE_MODE</name>
-                            <description>TRACE_MODE</description>
+                            <description>TRACE pins mode</description>
                             <bitOffset>6</bitOffset>
                             <bitWidth>2</bitWidth>
+                            <enumeratedValues>
+                                <name>TRACE_MODE</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Async</name>
+                                    <description>TRACE pin assignment for Asynchronous Mode</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Sync1</name>
+                                    <description>TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 1</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Sync2</name>
+                                    <description>TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 2</description>
+                                    <value>2</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Sync4</name>
+                                    <description>TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 4</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                     </fields>
                 </register>
@@ -1733,63 +1838,168 @@
                     <fields>
                         <field>
                             <name>DBG_TIM2_STOP</name>
-                            <description>DBG_TIM2_STOP</description>
+                            <description> TIM2 counter stopped when core is halted </description>
                             <bitOffset>0</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>DBG_xCounter_STOP</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Continue</name>
+                                    <description>counter clock is fed normally</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Stop</name>
+                                    <description>counter clock is halted</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                         <field>
                             <name>DBG_TIM3_STOP</name>
-                            <description>DBG_TIM3 _STOP</description>
+                            <description> TIM3 counter stopped when core is halted </description>
                             <bitOffset>1</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
                         </field>
                         <field>
                             <name>DBG_TIM4_STOP</name>
-                            <description>DBG_TIM4_STOP</description>
+                            <description> TIM3 counter stopped when core is halted </description>
                             <bitOffset>2</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
                         </field>
                         <field>
                             <name>DBG_TIM5_STOP</name>
-                            <description>DBG_TIM5_STOP</description>
+                            <description> TIM5 counter stopped when core is halted </description>
                             <bitOffset>3</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
+                        </field>
+                        <field>
+                            <name>DBG_TIM6_STOP</name>
+                            <description> TIM6 counter stopped when core is halted </description>
+                            <bitOffset>4</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
+                        </field>
+                        <field>
+                            <name>DBG_TIM7_STOP</name>
+                            <description> TIM7 counter stopped when core is halted </description>
+                            <bitOffset>5</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
+                        </field>
+                        <field>
+                            <name>DBG_TIM12_STOP</name>
+                            <description> TIM12 counter stopped when core is halted </description>
+                            <bitOffset>6</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
+                        </field>
+                        <field>
+                            <name>DBG_TIM13_STOP</name>
+                            <description> TIM13 counter stopped when core is halted </description>
+                            <bitOffset>7</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
+                        </field>
+                        <field>
+                            <name>DBG_TIM14_STOP</name>
+                            <description> TIM14 counter stopped when core is halted </description>
+                            <bitOffset>8</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
                         </field>
                         <field>
                             <name>DBG_RTC_Stop</name>
                             <description>RTC stopped when Core ishalted</description>
                             <bitOffset>10</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
                         </field>
                         <field>
                             <name>DBG_WWDG_STOP</name>
-                            <description>DBG_WWDG_STOP</description>
+                            <description> WWDG counter stopped when core is halted </description>
                             <bitOffset>11</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
                         </field>
                         <field>
                             <name>DBG_IWDG_STOP</name>
-                            <description>DBG_IWDEG_STOP</description>
+                            <description> IWDG counter stopped when core is halted </description>
                             <bitOffset>12</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_xCounter_STOP"/>
                         </field>
                         <field>
                             <name>DBG_I2C1_SMBUS_TIMEOUT</name>
-                            <description>DBG_J2C1_SMBUS_TIMEOUT</description>
+                            <description> I2C1 SMBUS timeout mode stopped when Core is halted</description>
                             <bitOffset>21</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>DBG_I2Cx_TIMEOUT</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>NormalMode</name>
+                                    <description>Same behavior as in normal mode</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>SMBusTimeoutFrozen</name>
+                                    <description>SMBUS timeout is frozen</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
                         </field>
                         <field>
                             <name>DBG_I2C2_SMBUS_TIMEOUT</name>
-                            <description>DBG_J2C2_SMBUS_TIMEOUT</description>
+                            <description> I2C2 SMBUS timeout mode stopped when Core is halted</description>
                             <bitOffset>22</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_I2Cx_TIMEOUT"/>
                         </field>
                         <field>
-                            <name>DBG_I2C3SMBUS_TIMEOUT</name>
-                            <description>DBG_J2C3SMBUS_TIMEOUT</description>
+                            <name>DBG_I2C3_SMBUS_TIMEOUT</name>
+                            <description> I2C3 SMBUS timeout mode stopped when Core is halted</description>
                             <bitOffset>23</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_I2Cx_TIMEOUT"/>
+                        </field>
+                        <field>
+                            <name>DBG_I2CFMP_SMBUS_TIMEOUT</name>
+                            <description> I2CFMP SMBUS timeout mode stopped when Core is halted</description>
+                            <bitOffset>24</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_I2Cx_TIMEOUT"/>
+                        </field>
+                        <field>
+                            <name>DBG_CAN1_STOP</name>
+                            <description> Debug CAN1 stopped when core is halted</description>
+                            <bitOffset>25</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues>
+                                <name>DBG_CANx_STOP</name>
+                                <usage>read-write</usage>
+                                <enumeratedValue>
+                                    <name>Continue</name>
+                                    <description>Same behavior as in normal mode</description>
+                                    <value>0</value>
+                                </enumeratedValue>
+                                <enumeratedValue>
+                                    <name>Stop</name>
+                                    <description>The CANx received registers are frozen</description>
+                                    <value>1</value>
+                                </enumeratedValue>
+                            </enumeratedValues>
+                        </field>
+                        <field>
+                            <name>DBG_CAN2_STOP</name>
+                            <description> Debug CAN2 stopped when core is halted</description>
+                            <bitOffset>26</bitOffset>
+                            <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="DBG_CANx_STOP"/>
                         </field>
                     </fields>
                 </register>

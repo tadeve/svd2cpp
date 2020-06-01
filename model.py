@@ -3,6 +3,8 @@ import xmltodict
 import re
 from string import Template
 from collections import namedtuple
+from pprint import pprint
+from copy import deepcopy
 
 accessors = {
     "read-only": "Readable",
@@ -135,13 +137,17 @@ class Field:
                 self.writeConstraints.append(self.gen_default_writeConstraint())
 
     def gen_default_enum(self):
+        # print(
+        #     f"generated defualt enum for : {self.register.peripheral.name}::{self.register.name}::{self.name}"
+        # )
         default_enum_dict = {
-            "name": f"{self.name}_t",
+            "name": f"{self.name}",
             "usage": access_to_usage(self.access),
             "enumeratedValue": [
                 {
                     "name": f"{self.name}_{value}",
                     "description": f"field has value {value:#0{(self.bitWidth//4)+2}x}",
+                    "value": value,
                 }
                 for value in range(2 ** (self.bitWidth))
             ],
@@ -186,31 +192,41 @@ class Field:
 
     def code_write_method(self):
         if self.access == "write-only":
-            with open("field_write_function_wo_template.txt", "r") as file:
+            with open("templates/field_write_function_wo_template.txt", "r") as file:
                 template = file.read()
         elif self.access == "read-write":
-            with open("field_write_function_template.txt", "r") as file:
+            with open("templates/field_write_function_template.txt", "r") as file:
                 template = file.read()
         else:
             raise Exception("should never be here !!!")
-        template_data = {
-            "name": self.name,
-            "type": self.write_type(),
-            "offset": self.bitOffset,
-            "mask": f"{((2 ** self.bitWidth) - 1) << self.bitOffset:#0{(self.bitWidth//4)+2}x}",
-        }
-        code = Template(template).substitute(template_data)
+        write_t = self.write_type()
+        if write_t != None:
+            template_data = {
+                "name": self.name,
+                "type": write_t,
+                "offset": self.bitOffset,
+                "mask": f"{((2 ** self.bitWidth) - 1) << self.bitOffset:#0{(self.bitWidth//4)+2}x}",
+            }
+            code = Template(template).substitute(template_data)
+            return code
+        else:
+            return ""
 
     def code_read_method(self):
-        with open("field_read_function_template.txt", "r") as file:
+        with open("templates/field_read_function_template.txt", "r") as file:
             template = file.read()
-        template_data = {
-            "name": self.name,
-            "type": self.write_type(),
-            "offset": self.bitOffset,
-            "mask": f"{((2 ** self.bitWidth) - 1) << self.bitOffset:#0{(self.bitWidth//4)+2}x}",
-        }
-        code = Template(template).substitute(template_data)
+        read_t = self.read_type()
+        if read_t != None:
+            template_data = {
+                "name": self.name,
+                "type": self.read_type(),
+                "offset": self.bitOffset,
+                "mask": f"{((2 ** self.bitWidth) - 1) << self.bitOffset:#0{(self.bitWidth//4)+2}x}",
+            }
+            code = Template(template).substitute(template_data)
+            return code
+        else:
+            return ""
 
     def code_types(self):
         field_enums = []
@@ -231,8 +247,9 @@ class Field:
 
 
 class Register:
-    def __init__(self, r):
+    def __init__(self, r, p):
         self.dict = r
+        self.peripheral = p
         self.name = self.dict["name"]
         if "displayName" in self.dict:
             self.displayName = self.dict["displayName"]
@@ -257,16 +274,18 @@ class Register:
         for field in self.dict["fields"]["field"]:
             if field["name"] == field_name:
                 return field
+        raise Exception("should never be here !!!")
         return None
 
     def find_enum_dict(self, enum_name):
         for field in self.dict["fields"]["field"]:
             if "enumeratedValues" in field:
-                force_list(field["enumeratedValues"])
-                for enum in field["enumeratedValues"]:
+                enums = force_list(field["enumeratedValues"])
+                for enum in enums:
                     if "name" in enum:
                         if enum["name"] == enum_name:
                             return enum
+        raise Exception("should never be here !!!")
         return None
 
     def class_name(self):
@@ -282,6 +301,7 @@ class Register:
             "methods": self.code_methods(),
         }
         code = Template(register_namespace_template).substitute(register_namespace_data)
+        return code
 
     def code_instance(self):
         with open("templates/register_instance_template.txt") as file:
@@ -290,6 +310,7 @@ class Register:
             "register_class": self.name,
             "offset": self.addressOffset,
             "register_name": self.name,
+            "description": self.description,
         }
         code = Template(register_instance_template).substitute(register_instance_data)
         return code
@@ -301,7 +322,10 @@ class Register:
         return "\n".join(set(register_enums))
 
     def code_methods(self):
-        pass
+        register_methods = []
+        for field in self.fields:
+            register_methods.append(field.code_methods())
+        return "\n".join(register_methods)
 
 
 class Peripheral:
@@ -331,9 +355,11 @@ class Peripheral:
             else:
                 self.interrupts.append(Interrupt(**self.dict["interrupt"]))
         if isinstance(self.dict["registers"]["register"], list):
-            self.registers = [Register(r) for r in self.dict["registers"]["register"]]
+            self.registers = [
+                Register(r, self) for r in self.dict["registers"]["register"]
+            ]
         else:
-            self.registers = [Register(self.dict["registers"]["register"])]
+            self.registers = [Register(self.dict["registers"]["register"], self)]
 
     def code(self):
         with open("templates/header_file_template.txt") as file:
@@ -369,12 +395,12 @@ class Peripheral:
 class Device:
     def __init__(self, d):
 
-        device = d["device"]
-        cpu = device["cpu"]
+        self.dict = d["device"]
+        cpu = self.dict["cpu"]
 
-        self.name = device["name"]
-        self.version = device["version"]
-        self.description = device["description"]
+        self.name = self.dict["name"]
+        self.version = self.dict["version"]
+        self.description = self.dict["description"]
         self.cpu = CPU(
             name=cpu["name"],
             revision=cpu["revision"],
@@ -384,13 +410,36 @@ class Device:
             nvicPrioBits=cpu["nvicPrioBits"],
             vendorSystickConfig=True if cpu["vendorSystickConfig"] == "true" else False,
         )
-        self.addressUnitBits = device["addressUnitBits"]
-        self.width = device["width"]
-        self.size = device["size"]
-        self.resetValue = device["resetValue"]
-        self.resetMask = device["resetMask"]
+        self.addressUnitBits = self.dict["addressUnitBits"]
+        self.width = self.dict["width"]
+        self.size = self.dict["size"]
+        self.resetValue = self.dict["resetValue"]
+        self.resetMask = self.dict["resetMask"]
         self.peripherals = []
-        for p in device["peripherals"]["peripheral"]:
-            if not "@derivedFrom" in p:
-                peri = Peripheral(p)
-                self.peripherals.append(peri)
+        for periph_dict in self.dict["peripherals"]["peripheral"]:
+            if not "@derivedFrom" in periph_dict:
+                periph_obj = Peripheral(periph_dict)
+            else:
+                derived_from = periph_dict["@derivedFrom"]
+                periph_obj = self.find_peripheral_dict(derived_from)
+                periph_obj = Peripheral(periph_obj)
+                periph_obj.name = periph_dict["name"]
+            self.peripherals.append(periph_obj)
+
+    def find_peripheral_dict(self, periph_name):
+
+        for p in self.dict["peripherals"]["peripheral"]:
+            if not "@derivedFrom" in p and p["name"] == periph_name:
+                return p
+        return None
+
+    def generate_lib(self):
+        peripheral_groups = dict()
+        for periph in self.peripherals:
+            if periph.groupName in peripheral_groups:
+                peripheral_groups[periph.groupName].append(periph)
+            else:
+                peripheral_groups[periph.groupName] = [periph]
+        for key, value in peripheral_groups.items():
+            value.sort(key=lambda v: v.name)
+            

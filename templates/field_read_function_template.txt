@@ -1,4 +1,4 @@
 $type $name(){
-    uint32_t tmp = this->bits_masked($mask) >> $field_offset;
+    uint32_t tmp = this->bits_masked($mask) >> $offset;
     return reinterpret_cast<$type>(tmp);
 }
